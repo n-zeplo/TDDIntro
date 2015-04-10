@@ -15,6 +15,8 @@ import static org.mockito.Mockito.*;
 public class LibraryTest {
     private List<String> books;
     private PrintStream printStream;
+    private DateTime time;
+    private DateTimeFormatter dateTimeFormatter;
 
     /*
 
@@ -27,25 +29,33 @@ public class LibraryTest {
     public void setUp() throws Exception {
         books = new ArrayList<>();
         printStream = mock(PrintStream.class);
+        time = new DateTime();
+        dateTimeFormatter = mock(DateTimeFormatter.class);
     }
 
-    private static void generateLibraryAndListBooks(List<String> books, PrintStream printStream) {
+    private void generateLibraryAndListBooks() {
         Library library = new Library(books, printStream, null);
         library.listBooks();
+    }
+
+    private void createLibraryAndCallWelcome(DateTime time, DateTimeFormatter dateTimeFormatter) {
+        Library library = new Library(books, printStream, dateTimeFormatter);
+
+        library.welcome(time);
     }
 
     @Test
     public void shouldPrintBookTitleWhenThereIsOneBook() {
         String title = "Book Title";
         books.add(title);
-        generateLibraryAndListBooks(books, printStream);
+        generateLibraryAndListBooks();
 
         verify(printStream).println("Book Title");
     }
 
     @Test
     public void shouldPrintNothingWhenThereAreNoBooks() {
-        generateLibraryAndListBooks(books, printStream);
+        generateLibraryAndListBooks();
 
         verify(printStream, never()).println();
     }
@@ -56,7 +66,7 @@ public class LibraryTest {
         String title2 = "Book Title 2";
         books.add(title1);
         books.add(title2);
-        generateLibraryAndListBooks(books, printStream);
+        generateLibraryAndListBooks();
 
         verify(printStream).println("Book Title 1");
         verify(printStream).println("Book Title 2");
@@ -72,28 +82,16 @@ public class LibraryTest {
     // This one is done for you
     @Test
     public void shouldWelcomeUser() {
-        DateTimeFormatter dateTimeFormatter = mock(DateTimeFormatter.class);
-        Library library = new Library(books, printStream, dateTimeFormatter);
+        createLibraryAndCallWelcome(time, dateTimeFormatter);
 
-        // We don't need to mock DateTime because it is a value object
-        // We can't mock it because it is a final class
-        DateTime time = new DateTime();
-        
-        library.welcome(time);
-        
         verify(printStream).println(contains("Welcome"));
     }
     
     @Test
     public void shouldDisplayFormattedTime() {
-        DateTime time = new DateTime();
-        DateTimeFormatter dateTimeFormatter = mock(DateTimeFormatter.class);
-
         when(dateTimeFormatter.print(time)).thenReturn("FormattedTimeString");
 
-        Library library = new Library(books, printStream, dateTimeFormatter);
-
-        library.welcome(time);
+        createLibraryAndCallWelcome(time, dateTimeFormatter);
 
         verify(printStream).println(contains("FormattedTimeString"));
     }
