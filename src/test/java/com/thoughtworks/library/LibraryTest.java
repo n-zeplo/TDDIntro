@@ -98,7 +98,10 @@ public class LibraryTest {
 
     @Test
     public void shouldDisplayFormattedTimeWhenItIsAnEmptyString() {
+        when(dateTimeFormatter.print(time)).thenReturn("");
 
-        // implement me
+        createLibraryAndCallWelcome(time, dateTimeFormatter);
+
+        verify(printStream).println(contains(dateTimeFormatter.print(time)));
     }
 }
