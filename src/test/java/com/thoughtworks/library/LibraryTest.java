@@ -2,6 +2,7 @@ package com.thoughtworks.library;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.PrintStream;
@@ -12,7 +13,8 @@ import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.*;
 
 public class LibraryTest {
-
+    private List<String> books;
+    private PrintStream printStream;
 
     /*
 
@@ -21,41 +23,40 @@ public class LibraryTest {
      */
 
 
+    @Before
+    public void setUp() throws Exception {
+        books = new ArrayList<>();
+        printStream = mock(PrintStream.class);
+    }
+
+    private static void generateLibraryAndListBooks(List<String> books, PrintStream printStream) {
+        Library library = new Library(books, printStream, null);
+        library.listBooks();
+    }
+
     @Test
     public void shouldPrintBookTitleWhenThereIsOneBook() {
-        List<String> books = new ArrayList<>();
         String title = "Book Title";
         books.add(title);
-        PrintStream printStream = mock(PrintStream.class);
-        Library library = new Library(books, printStream, null);
-
-        library.listBooks();
+        generateLibraryAndListBooks(books, printStream);
 
         verify(printStream).println("Book Title");
     }
 
     @Test
     public void shouldPrintNothingWhenThereAreNoBooks() {
-        List<String> books = new ArrayList<>();
-        PrintStream printStream = mock(PrintStream.class);
-        Library library = new Library(books, printStream, null);
-
-        library.listBooks();
+        generateLibraryAndListBooks(books, printStream);
 
         verify(printStream, never()).println();
     }
 
     @Test
     public void shouldPrintBothBookTitlesWhenThereAreTwoBooks() {
-        List<String> books = new ArrayList<>();
         String title1 = "Book Title 1";
         String title2 = "Book Title 2";
         books.add(title1);
         books.add(title2);
-        PrintStream printStream = mock(PrintStream.class);
-        Library library = new Library(books, printStream, null);
-
-        library.listBooks();
+        generateLibraryAndListBooks(books, printStream);
 
         verify(printStream).println("Book Title 1");
         verify(printStream).println("Book Title 2");
@@ -71,8 +72,6 @@ public class LibraryTest {
     // This one is done for you
     @Test
     public void shouldWelcomeUser() {
-        List<String> books = new ArrayList<>();
-        PrintStream printStream = mock(PrintStream.class);
         DateTimeFormatter dateTimeFormatter = mock(DateTimeFormatter.class);
         Library library = new Library(books, printStream, dateTimeFormatter);
 
@@ -87,8 +86,6 @@ public class LibraryTest {
     
     @Test
     public void shouldDisplayFormattedTime() {
-        List<String> books = new ArrayList<>();
-        PrintStream printStream = mock(PrintStream.class);
         DateTime time = new DateTime();
         DateTimeFormatter dateTimeFormatter = mock(DateTimeFormatter.class);
 
