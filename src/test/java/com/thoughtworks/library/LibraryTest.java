@@ -17,6 +17,8 @@ public class LibraryTest {
     private PrintStream printStream;
     private DateTime time;
     private DateTimeFormatter dateTimeFormatter;
+    private Library library;
+    private Library libraryWithDateTimeFormatter;
 
     /*
 
@@ -31,31 +33,23 @@ public class LibraryTest {
         printStream = mock(PrintStream.class);
         time = new DateTime();
         dateTimeFormatter = mock(DateTimeFormatter.class);
-    }
+        library = new Library(books, printStream, null);
+        libraryWithDateTimeFormatter = new Library(books, printStream, dateTimeFormatter);
 
-    private void generateLibraryAndListBooks() {
-        Library library = new Library(books, printStream, null);
-        library.listBooks();
-    }
-
-    private void createLibraryAndCallWelcome(DateTime time, DateTimeFormatter dateTimeFormatter) {
-        Library library = new Library(books, printStream, dateTimeFormatter);
-
-        library.welcome(time);
     }
 
     @Test
     public void shouldPrintBookTitleWhenThereIsOneBook() {
         String title = "Book Title";
         books.add(title);
-        generateLibraryAndListBooks();
+        library.listBooks();
 
         verify(printStream).println("Book Title");
     }
 
     @Test
     public void shouldPrintNothingWhenThereAreNoBooks() {
-        generateLibraryAndListBooks();
+        library.listBooks();
 
         verify(printStream, never()).println();
     }
@@ -66,7 +60,7 @@ public class LibraryTest {
         String title2 = "Book Title 2";
         books.add(title1);
         books.add(title2);
-        generateLibraryAndListBooks();
+        library.listBooks();
 
         verify(printStream).println("Book Title 1");
         verify(printStream).println("Book Title 2");
@@ -82,7 +76,7 @@ public class LibraryTest {
     // This one is done for you
     @Test
     public void shouldWelcomeUser() {
-        createLibraryAndCallWelcome(time, dateTimeFormatter);
+        libraryWithDateTimeFormatter.welcome(time);
 
         verify(printStream).println(contains("Welcome"));
     }
@@ -91,7 +85,7 @@ public class LibraryTest {
     public void shouldDisplayFormattedTime() {
         when(dateTimeFormatter.print(time)).thenReturn("FormattedTimeString");
 
-        createLibraryAndCallWelcome(time, dateTimeFormatter);
+        libraryWithDateTimeFormatter.welcome(time);
 
         verify(printStream).println(contains("FormattedTimeString"));
     }
@@ -100,7 +94,7 @@ public class LibraryTest {
     public void shouldDisplayFormattedTimeWhenItIsAnEmptyString() {
         when(dateTimeFormatter.print(time)).thenReturn("");
 
-        createLibraryAndCallWelcome(time, dateTimeFormatter);
+        libraryWithDateTimeFormatter.welcome(time);
 
         verify(printStream).println(contains(dateTimeFormatter.print(time)));
     }
